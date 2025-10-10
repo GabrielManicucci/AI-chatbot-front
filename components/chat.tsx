@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-// --- NOVOS ENDPOINTS DA API ---
 const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 
 type Message = {
@@ -26,13 +25,11 @@ type Message = {
 };
 
 export function Chat() {
-  // --- Estados Manuais ---
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [conversationId, setConversationId] = useState<string | null>(null);
 
-  // 1. CRIAR UMA REFERÊNCIA PARA UM ELEMENTO "ÂNCORA" NO FINAL DA LISTA
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // --- Lógica de Inicialização ---
@@ -62,7 +59,6 @@ export function Chat() {
               setConversationId(storedId);
             }
           } else {
-            // Se o ID for inválido (ex: banco foi limpo), cria uma nova conversa
             localStorage.removeItem("conversationId");
             const newConvResponse = await fetch(
               `${BASE_API_URL}/conversation`,
@@ -73,7 +69,6 @@ export function Chat() {
             setConversationId(newConvData.id);
           }
         } else {
-          // Se não há ID, cria uma nova conversa
           const response = await fetch(`${BASE_API_URL}/conversation`, {
             method: "POST",
           });
@@ -91,12 +86,9 @@ export function Chat() {
     initializeConversation();
   }, []);
 
-  // Efeito para rolar para a última mensagem
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]); // Dispara toda vez que `messages` é atualizado
-
-  // --- Funções de Controle Manual ---
+  }, [messages]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -106,7 +98,6 @@ export function Chat() {
     e.preventDefault();
     if (!input.trim() || isLoading || !conversationId) return;
 
-    // 1. Atualização Otimista da mensagem do usuário
     const userMessage: Message = { id: "", role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
     const currentInput = input;
@@ -114,7 +105,6 @@ export function Chat() {
     setIsLoading(true);
 
     try {
-      // 2. Chama a API para registrar a mensagem e obter a resposta da IA
       const response = await fetch(
         `${BASE_API_URL}/message/${conversationId}`,
         {
@@ -122,7 +112,7 @@ export function Chat() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             role: "user",
-            question: currentInput, // Enviando o conteúdo da mensagem do usuário
+            question: currentInput,
           }),
         }
       );
@@ -138,11 +128,9 @@ export function Chat() {
         content: data.modelMessage,
       };
 
-      // 3. Adiciona a resposta da IA ao estado
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error("Erro no handleSubmit:", error);
-      // Opcional: Adicionar uma mensagem de erro na UI
       const errorMessage: Message = {
         id: "",
         role: "assistant",
