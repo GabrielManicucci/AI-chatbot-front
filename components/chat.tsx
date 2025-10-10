@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { nanoid } from "nanoid";
 
 // --- NOVOS ENDPOINTS DA API ---
 const BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
