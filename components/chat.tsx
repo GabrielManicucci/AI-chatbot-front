@@ -144,7 +144,7 @@ export function Chat() {
       console.error("Erro no handleSubmit:", error);
       // Opcional: Adicionar uma mensagem de erro na UI
       const errorMessage: Message = {
-        id: nanoid(),
+        id: "",
         role: "assistant",
         content: "Desculpe, ocorreu um erro. Por favor, tente novamente.",
       };
