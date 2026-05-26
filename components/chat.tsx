@@ -40,10 +40,10 @@ export function Chat() {
     const initializeConversation = async () => {
       setIsLoading(true);
       try {
-        if (storedId) {
+        if (storedId && storedId !== "undefined" && storedId !== "null") {
           // Se encontrou um ID, busca o histórico
           const response = await fetch(
-            `${BASE_API_URL}/conversation/${storedId}`
+            `${BASE_API_URL}/conversation/${storedId}`,
           );
           if (response.ok) {
             const data = await response.json();
@@ -53,7 +53,7 @@ export function Chat() {
                   id: msg.id,
                   role: msg.role === "model" ? "assistant" : "user",
                   content: msg.content,
-                })
+                }),
               );
               setMessages(history);
               setConversationId(storedId);
@@ -62,11 +62,11 @@ export function Chat() {
             localStorage.removeItem("conversationId");
             const newConvResponse = await fetch(
               `${BASE_API_URL}/conversation`,
-              { method: "POST" }
+              { method: "POST" },
             );
             const newConvData = await newConvResponse.json();
-            localStorage.setItem("conversationId", newConvData.id);
-            setConversationId(newConvData.id);
+            localStorage.setItem("conversationId", newConvData.conversation.id);
+            setConversationId(newConvData.conversation.id);
           }
         } else {
           const response = await fetch(`${BASE_API_URL}/conversation`, {
@@ -114,7 +114,7 @@ export function Chat() {
             role: "user",
             question: currentInput,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
